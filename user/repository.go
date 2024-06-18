@@ -33,3 +33,5 @@ func (r *repository) FindByEmail(email string) (User, error) {
 	}
 	return user, nil
 }
+
+// Email

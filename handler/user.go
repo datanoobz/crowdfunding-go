@@ -87,3 +87,45 @@ func (h *userHandler) Login(c *gin.Context) {
 // maping dari input user ke input struk
 //input struck parsing service
 //di service mencari dengan bantuan repository dengan email x
+
+// Email Check
+
+func (h *userHandler) CheckEmailAvailable(c *gin.Context) {
+
+	var input user.CheckEmailInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Email checking failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	emailAvailable, err := h.userService.EmailAvailable(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": "Terjadi kesalahan"}
+		response := helper.APIResponse("Email checking faile", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+	data := gin.H{
+		"is_available": emailAvailable,
+	}
+
+	metaMessage := "Email has been registered"
+
+	if emailAvailable {
+		metaMessage = "Email is available"
+	}
+	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, response)
+}
+
+// ada input email dari user
+// input email di-mapping ke struck input
+// struck input dipassing ke service
+// service akan manggil repository email sudah ada atau belu,
+// repository query ke db
