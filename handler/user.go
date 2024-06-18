@@ -24,6 +24,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
+
 		response := helper.APIResponse("Failed to create Account", http.StatusUnprocessableEntity, "error", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
@@ -48,3 +49,41 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 //catch input from user
 // map input from user to struck RegisterUserInput
 // the struck we will passing as a paramater service
+//======================================================================
+// Handler Login
+
+func (h *userHandler) Login(c *gin.Context) {
+	var input user.LoginInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Login Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	loggedinuser, err := h.userService.Login(input)
+
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse("Login Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedinuser, "tokemtokentoken")
+
+	response := helper.APIResponse("Login Successful", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
+}
+
+//user memasukkan input (email & password)
+//input ditangkap handler
+// maping dari input user ke input struk
+//input struck parsing service
+//di service mencari dengan bantuan repository dengan email x
