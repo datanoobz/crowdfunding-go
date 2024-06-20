@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crowdfunding/auth"
 	"crowdfunding/handler"
 	"crowdfunding/user"
 	"log"
@@ -21,12 +22,13 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 
-	api := router.Group("/api/v1")
+	api := router.Group("/v1")
 
 	api.POST("/sign-up", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
