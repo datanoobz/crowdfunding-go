@@ -39,6 +39,8 @@ func main() {
 
 	api := router.Group("/v1")
 
+	router.Static("/images", "./images")
+
 	api.POST("/sign-up", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checker", userHandler.CheckEmailAvailable)
