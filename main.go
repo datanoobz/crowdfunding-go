@@ -18,7 +18,7 @@ import (
 
 func main() {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:Kaitokid1412@#@tcp(127.0.0.1:3306)/crowdfunding?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "crowdfunding:Kaitokid1412@tcp(192.168.50.28:3306)/crowdfunding?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -48,6 +48,7 @@ func main() {
 
 	api.GET("/campaigns", campaignHandler.GetCampaigns)
 	api.GET("/campaigns/:id", campaignHandler.GetCampaign)
+	api.POST("/campaigns", authMiddleware(authService, userService), campaignHandler.CreateCampaign)
 	router.Run()
 }
 
